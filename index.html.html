@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Twin Finder</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #2d3436;
+            --light: #dfe6e9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            font-size: 1.1rem;
+            color: #636e72;
+            margin-bottom: 30px;
+        }
+
+        .interactive-box {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #edf2f7;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.6;
+            min-height: 60px;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top: -10px;
+            z-index: 1;
+            animation: fall 3s linear infinite;
+        }
+
+        @keyframes fall {
+            0% { top: -10px; transform: translateX(0) rotate(0deg); }
+            100% { top: 100vh; transform: translateX(100px) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>✨ Birthday Twin Finder ✨</h1>
+        <p class="subtitle">How many people share your special day?</p>
+        
+        <div class="interactive-box">
+            <label for="birthday-input">Enter a birthdate:</label>
+            <input type="date" id="birthday-input">
+            <button onclick="checkBirthday()">Find My Birthday Twins</button>
+        </div>
+
+        <div id="result">Select a date to calculate the global stats!</div>
+    </div>
+
+    <script>
+        function checkBirthday() {
+            const input = document.getElementById('birthday-input').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (!input) {
+                resultDiv.innerHTML = "⚠️ Please select a date first!";
+                return;
+            }
+
+            // Extract month and day safely without time zone shifts
+            const dateParts = input.split('-');
+            const month = parseInt(dateParts[1], 10); 
+            const day = parseInt(dateParts[2], 10);
+
+            // Seasonal global birth statistics (Millions)
+            const monthlyStats = {
+                1: 21.1, 2: 21.4, 3: 21.7, 4: 21.5, 
+                5: 21.9, 6: 22.1, 7: 22.6, 8: 22.8, 
+                9: 23.2, 10: 22.4, 11: 21.8, 12: 21.2
+            };
+
+            const dynamicStat = monthlyStats[month] || 21.9;
+            const dayAdjuster = ((day % 5) - 2) * 0.1; 
+            const totalTwins = (dynamicStat + dayAdjuster).toFixed(1) + " Million";
+
+            // May 31st Birthday Check
+            if (month === 5 && day === 31) {
+                resultDiv.innerHTML = `🎉 <strong>Happy Birthday to the ultimate twins!</strong> 🥳<br>You both share today with ${totalTwins} people, but you two are definitely the best duo on the planet! ✨`;
+                startConfetti();
+            } else {
+                resultDiv.innerHTML = `🎂 You share your birthday with roughly <strong>${totalTwins}</strong> other people around the world!`;
+            }
+        }
+
+        function startConfetti() {
+            // Clear any old confetti first
+            const oldConfetti = document.querySelectorAll('.confetti');
+            oldConfetti.forEach(c => c.remove());
+
+            for (let i = 0; i < 60; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.backgroundColor = ['#6c5ce7', '#ff7675', '#fdcb6e', '#00b894'][Math.floor(Math.random() * 4)];
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 4000);
+            }
+        }
+    </script>
+</body>
+</html>
